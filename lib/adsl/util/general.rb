@@ -72,7 +72,6 @@ module ArrayWithElemSupport
     end
     self
   end
-kir
   def map_index(&block)
     return map(&block) if block.nil? or block.arity < 2
     pairs = self.zip self.length.times
