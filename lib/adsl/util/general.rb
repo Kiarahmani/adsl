@@ -3,7 +3,6 @@ require 'open3'
 require 'thread'
 require 'active_support'
 require 'active_support/core_ext/module'
-require 'active_support/core_ext/module/aliasing'
 require 'tempfile'
 
 TEST_ENV = false
@@ -63,15 +62,16 @@ class Object
   end
 end
 
-
-module ArrayWithElemSupport
-  def each_index(&block)
-    super(&block) if block.nil? or block.arity < 2
+class Array
+  def each_index_with_elem(&block)
+    return each_index_without_elem(&block) if block.nil? or block.arity < 2
     count.times.each do |index|
       block[self[index], index]
     end
     self
   end
+  alias_method_chain :each_index, :elem
+
   def map_index(&block)
     return map(&block) if block.nil? or block.arity < 2
     pairs = self.zip self.length.times
@@ -134,11 +134,6 @@ module ArrayWithElemSupport
     self.map &:deep_dup
   end
 end
-
-
-
-
-
 
 class Hash
   def deep_dup
